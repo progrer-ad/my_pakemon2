@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import loader from "../../img/poke.png";
 import { Card } from "../";
 
@@ -7,14 +7,14 @@ import "./Main.css";
 
 const Main = () => {
   const [pokemons, setPokemons] = useState([]);
-  const [isloading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [url, setUrl] = useState(
-    "https://pokeapi.co/api/v2/pokemon?offset=0limit=20"
+    "https://pokeapi.co/api/v2/pokemon?offset=0&limit=20" // Url-da "&" belgisi qo'shildi
   );
   const [nextPage, setNextPage] = useState("");
   const [prevPage, setPrevPage] = useState("");
 
-  const getData = async () => {
+  const getData = useCallback(async () => { // useCallback orqali getData funksiyasi yaratildi
     setIsLoading(true);
     try {
       const data = await axios.get(url).then((res) => res.data);
@@ -37,17 +37,17 @@ const Main = () => {
       console.log(error);
       setIsLoading(false);
     }
-  };
+  }, [url]);
 
   useEffect(() => {
     getData();
-  }, [url]);
+  }, [getData]); // getData qo'shildi
 
   return (
     <>
       <main>
         <div className="container mb-5">
-          {isloading ? (
+          {isLoading ? (
             <img src={loader} alt="loader" className="loader" />
           ) : (
             <>
@@ -64,7 +64,7 @@ const Main = () => {
                   );
                 })}
               </div>
-              <div className="pages ">
+              <div className="pages">
                 <button className="btn btn-success mx-5 fs-5" onClick={() => setUrl(prevPage)}>prev</button>
                 <button className="btn btn-success mx-5 fs-5" onClick={() => setUrl(nextPage)}>next</button>
               </div>
